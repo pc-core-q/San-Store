@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تواصل معنا | سان ستور</title>
+<link rel="icon" href="assets/logo/logo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="site-header" data-active="contact"></div>
+
+<main>
+  <section class="page-header">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">الرئيسية</a> / تواصل معنا</div>
+      <h1>تواصل معنا</h1>
+      <p>يسعدنا مساعدتك في أي وقت — تواصل معنا عبر واتساب أو انستغرام أو الهاتف.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:10px;">
+    <div class="container">
+      <div class="feature-grid" id="contactCards"></div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container" style="max-width:640px;">
+      <div class="form-card" style="max-width:100%;">
+        <h3 style="margin-bottom:6px;">معلومات إضافية</h3>
+        <div class="detail-meta" id="extraInfo" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/config.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/store.js"></script>
+<script src="js/whatsapp.js"></script>
+<script src="js/app.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const s = Store.getSettings();
+
+    const cards = [
+      { icon: "whatsapp", title: "واتساب", desc: "أسرع طريقة للطلب والاستفسار", link: "https://wa.me/" + whatsappDigitsOnly(s.whatsapp), label: "راسلنا الآن" },
+      { icon: "instagram", title: "انستغرام", desc: "تابع جديدنا وعروضنا", link: s.instagram, label: "زيارة الحساب" },
+      { icon: "phone", title: "الهاتف", desc: s.phone, link: "tel:" + s.phone, label: "اتصال مباشر" },
+      { icon: "home", title: "الموقع", desc: s.address, link: null, label: null }
+    ];
+
+    document.getElementById("contactCards").innerHTML = cards.map(function (c) {
+      return '<div class="feature-card">' +
+        '<div class="icon">' + iconSvg(c.icon) + "</div>" +
+        "<h3>" + c.title + "</h3>" +
+        "<p>" + c.desc + "</p>" +
+        (c.link ? '<a href="' + c.link + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm">' + c.label + "</a>" : "") +
+      "</div>";
+    }).join("");
+
+    document.getElementById("extraInfo").innerHTML =
+      "<span><strong>ساعات العمل:</strong> " + s.workingHours + "</span>" +
+      "<span><strong>معلومات التوصيل:</strong> " + s.deliveryInfo + "</span>";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سان ستور | متجر مستلزمات الحيوانات الأليفة</title>
+<meta name="description" content="متجر عراقي لمستلزمات القطط والكلاب والطيور والأسماك — طلب سهل عبر واتساب وتوصيل سريع.">
+<link rel="icon" href="assets/logo/logo.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="site-header" data-active="home"></div>
+
+<main>
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="hero-blob"></div>
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <div class="hero-eyebrow-free">🐾 كل ما يحتاجه صديقك الأليف</div>
+        <h1>مستلزمات حيوانات أليفة تستحقها عائلتك الصغيرة</h1>
+        <p>طعام، ألعاب، أسرّة، وأدوات عناية بجودة موثوقة — تصفّح المتجر واطلب منتجاتك المفضلة مباشرة عبر واتساب دون تعقيد.</p>
+        <div class="hero-cta">
+          <a href="products.html" class="btn btn-primary">تسوق الآن</a>
+          <a href="#categories" class="btn btn-outline">تصفح الأقسام</a>
+        </div>
+        <div class="hero-trust">
+          <div><strong>+500</strong><span>عميل سعيد</span></div>
+          <div><strong>+20</strong><span>منتج متنوع</span></div>
+          <div><strong>24س</strong><span>توصيل سريع</span></div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img src="assets/logo/logo.png" alt="شعار سان ستور">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Categories ============ -->
+  <section class="section" id="categories">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>تسوّق حسب القسم</h2>
+          <p>كل ما تحتاجه لحيوانك الأليف مرتّب في أقسام واضحة وسهلة التصفح.</p>
+        </div>
+      </div>
+      <div class="cat-scroller" id="homeCategories"></div>
+    </div>
+  </section>
+
+  <!-- ============ Featured products ============ -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>منتجات مميزة</h2>
+          <p>الأكثر طلبًا من عملائنا هذا الشهر.</p>
+        </div>
+        <a href="products.html" class="btn btn-outline btn-sm">عرض الكل</a>
+      </div>
+      <div class="product-grid" id="featuredGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ New products ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>وصل حديثًا</h2>
+          <p>أحدث الإضافات إلى المتجر.</p>
+        </div>
+        <a href="products.html" class="btn btn-outline btn-sm">عرض الكل</a>
+      </div>
+      <div class="product-grid" id="newGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ Why choose us ============ -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>لماذا تختار سان ستور؟</h2>
+          <p>نهتم بتفاصيل صحة وراحة حيوانك الأليف في كل طلب.</p>
+        </div>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="icon">__ICON_TRUCK__</div>
+          <h3>توصيل سريع وموثوق</h3>
+          <p>خلال 24-48 ساعة داخل بغداد، وأيام قليلة لباقي المحافظات.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">__ICON_SHIELD__</div>
+          <h3>منتجات أصلية</h3>
+          <p>نختار منتجاتنا بعناية من مصادر موثوقة لضمان الجودة والسلامة.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">__ICON_WHATSAPP__</div>
+          <h3>طلب سهل عبر واتساب</h3>
+          <p>لا تعقيد في الدفع الإلكتروني — أرسل طلبك وتواصل مباشرة معنا.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">__ICON_HEART__</div>
+          <h3>دعم يهتم بحيوانك</h3>
+          <p>فريقنا جاهز للمساعدة في اختيار المنتج الأنسب لصديقك الأليف.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Contact band ============ -->
+  <section class="section">
+    <div class="container">
+      <div class="contact-band" id="contactBand">
+        <div>
+          <h2>لديك استفسار؟ تواصل معنا مباشرة</h2>
+          <p>فريقنا متاح يوميًا للرد على استفساراتك ومساعدتك في اختيار المنتج المناسب.</p>
+        </div>
+        <div class="social-row" id="homeSocialRow"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/config.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/store.js"></script>
+<script src="js/whatsapp.js"></script>
+<script src="js/app.js"></script>
+<script src="js/products.js"></script>
+<script>
+  // تعبئة أيقونات قسم "لماذا تختار وربيرة" ورابط التواصل السريع
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector(".feature-grid").innerHTML = document.querySelector(".feature-grid").innerHTML
+      .replace("__ICON_TRUCK__", iconSvg("truck"))
+      .replace("__ICON_SHIELD__", iconSvg("shield"))
+      .replace("__ICON_WHATSAPP__", iconSvg("whatsapp"))
+      .replace("__ICON_HEART__", iconSvg("heart"));
+
+    const s = Store.getSettings();
+    document.getElementById("homeSocialRow").innerHTML =
+      '<a href="https://wa.me/' + whatsappDigitsOnly(s.whatsapp) + '" target="_blank" rel="noopener">' + iconSvg("whatsapp") + "واتساب</a>" +
+      '<a href="' + s.instagram + '" target="_blank" rel="noopener">' + iconSvg("instagram") + "انستغرام</a>";
+  });
+</script>
+</body>
+</html>
