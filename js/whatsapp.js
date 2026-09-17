@@ -28,12 +28,12 @@ function showDeliveryModal(onConfirm) {
           '<h3 style="margin:0;">معلومات التوصيل</h3>' +
           '<button class="close-modal" id="closeDeliveryModal" type="button">' + iconSvg("close") + '</button>' +
         '</div>' +
-        '<p style="font-size: .85rem; margin-top: -10px; margin-bottom: 20px;">يرجى إدخال عنوانك لإكمال الطلب.</p>' +
+        '<p style="font-size: .85rem; margin-top: -10px; margin-bottom: 20px;">يرجى إدخال عنوانك لإكمال الطلب عبر واتساب.</p>' +
         '<form id="deliveryForm">' +
           '<div class="field"><label>المحافظة</label><input type="text" id="delGov" placeholder="مثال: بغداد" required></div>' +
           '<div class="field"><label>المنطقة</label><input type="text" id="delArea" placeholder="مثال: المنصور" required></div>' +
           '<div class="field"><label>أقرب نقطة دالة (اختياري)</label><input type="text" id="delLandmark" placeholder="مثال: قرب مول المنصور"></div>' +
-          '<button type="submit" class="btn btn-whatsapp btn-block" style="margin-top:20px;">تأكيد وإرسال </button>' +
+          '<button type="submit" class="btn btn-whatsapp btn-block" style="margin-top:20px;">تأكيد وإرسال عبر واتساب</button>' +
         '</form>' +
       '</div>';
     document.body.appendChild(modal);
