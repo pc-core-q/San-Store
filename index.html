@@ -7,16 +7,32 @@
 <meta name="description" content="متجر عراقي لمستلزمات القطط والكلاب والطيور والأسماك — طلب سهل عبر واتساب وتوصيل سريع.">
 <link rel="icon" href="assets/logo/logo.png">
 <link rel="stylesheet" href="css/style.css?v=5">
-  <style>
+<style>
   @media (max-width: 768px) {
+    /* قسم: لماذا تختارنا */
     .feature-grid {
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 10px !important;
     }
-    .feature-grid h3 { font-size: 14px !important; margin-bottom: 5px !important; }
-    .feature-grid p { font-size: 12px !important; }
-    .feature-grid .price { font-size: 14px !important; }
-    .feature-grid .btn-primary { padding: 6px !important; font-size: 12px !important; }
+    .feature-grid h3 { font-size: 13px !important; margin-bottom: 5px !important; }
+    .feature-grid p { font-size: 11px !important; }
+    
+    /* شبكة المنتجات (مميزة، حديثة، وكل المتجر) */
+    .product-grid, #shopGrid {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 8px !important;
+    }
+    .product-card {
+      min-width: 0 !important;
+      padding: 8px !important;
+    }
+    /* تصغير نصوص المنتج وإخفاء الوصف الطويل لتوفير المساحة */
+    .product-card .product-name { font-size: 12px !important; margin-bottom: 4px !important; line-height: 1.4 !important; }
+    .product-card .product-desc { display: none !important; } 
+    .product-card .stock-line { font-size: 10px !important; margin-bottom: 4px !important; }
+    .product-card .price { font-size: 13px !important; margin: 6px 0 !important; }
+    .product-card .product-actions .btn { padding: 6px !important; font-size: 11px !important; }
   }
 </style>
 </head>
