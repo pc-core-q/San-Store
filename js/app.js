@@ -80,8 +80,7 @@ function renderFooter() {
           "</ul></div>" +
         "</div>" +
         '<div class="footer-bottom">' +
-"<span style='display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; line-height: 1.8;'><span>&copy; " + new Date().getFullYear() + " " + settings.storeName + " - جميع الحقوق محفوظة. | اعداد و تطوير | م.امير</span><span>انستغرام : <a href='https://instagram.com/az_6ui' target='_blank' style='color: #a5d6a7; text-decoration: none;'>az_6ui</a></span><span>واتساب: <a href='https://wa.me/9647813623682' target='_blank' style='color: #a5d6a7; text-decoration: none;' dir='ltr'>07813623682</a></span></span>" +      "</div>" +
-    "</footer>";
+"<span style='white-space: normal !important; display: block; width: 100%; overflow: hidden; line-height: 2;'>&copy; " + new Date().getFullYear() + " " + settings.storeName + " - جميع الحقوق محفوظة. | اعداد و تطوير | م.امير <span style='display: inline-block; margin: 0 10px;'>انستغرام : <a href='https://instagram.com/az_6ui' target='_blank' style='color: #a5d6a7; text-decoration: none;'>az_6ui</a></span> <span style='display: inline-block; margin: 0 10px;'>واتساب: <a href='https://wa.me/9647813623682' target='_blank' style='color: #a5d6a7; text-decoration: none;' dir='ltr'>07813623682</a></span></span>" +    "</footer>";
 }
 
 function initMobileNav() {
