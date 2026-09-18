@@ -443,3 +443,99 @@ function wireSettingsForm() {
 }
 
 document.addEventListener("DOMContentLoaded", initAdminPage);
+
+/* --- ترقية الأقسام لدعم الصور --- */
+let pendingCategoryImage = null;
+
+function renderCategoriesTable() {
+  const tbody = document.getElementById("categoriesTableBody");
+  if (!tbody) return;
+  const categories = Store.getCategories();
+  const products = Store.getProducts();
+
+  if (!categories.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--ink-300);">لا توجد أقسام</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = categories.map(function (c) {
+    const count = products.filter(function (p) { return p.categoryId === c.id; }).length;
+    const img = c.image ? '<img src="' + c.image + '">' : '<div class="admin-table-icon">' + iconSvg(c.icon || "box") + "</div>";
+    return (
+      "<tr>" +
+        "<td>" + img + "</td>" +
+        "<td>" + c.name + "</td>" +
+        "<td>" + count + " منتج</td>" +
+        '<td class="row-actions">' +
+          '<button class="btn-icon btn-sm" title="تعديل" onclick="openCategoryModal(\'' + c.id + '\')">' + iconSvg("edit") + "</button>" +
+          '<button class="btn-icon btn-sm" title="حذف" onclick="deleteCategoryConfirm(\'' + c.id + '\')">' + iconSvg("trash") + "</button>" +
+        "</td>" +
+      "</tr>"
+    );
+  }).join("");
+}
+
+function wireCategoryModal() {
+  const addBtn = document.getElementById("addCategoryBtn");
+  if (addBtn) addBtn.addEventListener("click", function () { openCategoryModal(null); });
+  const closeBtn = document.getElementById("closeCategoryModal");
+  if (closeBtn) closeBtn.addEventListener("click", closeCategoryModal);
+  const form = document.getElementById("categoryForm");
+  if (form) form.addEventListener("submit", saveCategoryForm);
+
+  const imageInput = document.getElementById("categoryImageInput");
+  if (imageInput) {
+    imageInput.addEventListener("change", function () {
+      const file = imageInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function () {
+        pendingCategoryImage = reader.result;
+        document.getElementById("categoryImagePreview").innerHTML = '<img src="' + reader.result + '">';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+}
+
+function openCategoryModal(categoryId) {
+  editingCategoryId = categoryId;
+  pendingCategoryImage = null;
+  const modal = document.getElementById("categoryModal");
+  const title = document.getElementById("categoryModalTitle");
+  const form = document.getElementById("categoryForm");
+  form.reset();
+
+  const preview = document.getElementById("categoryImagePreview");
+
+  if (categoryId) {
+    const c = Store.getCategories().find(function (cc) { return cc.id === categoryId; });
+    title.textContent = "تعديل القسم";
+    document.getElementById("categoryName").value = c.name;
+    pendingCategoryImage = c.image || null;
+    if(preview) preview.innerHTML = c.image ? '<img src="' + c.image + '">' : iconSvg(c.icon || "box");
+  } else {
+    title.textContent = "إضافة قسم جديد";
+    if(preview) preview.innerHTML = iconSvg("box");
+  }
+  modal.classList.add("open");
+}
+
+function saveCategoryForm(e) {
+  e.preventDefault();
+  const name = document.getElementById("categoryName").value.trim();
+
+  if (!name) { showToast("يرجى إدخال اسم القسم"); return; }
+
+  if (editingCategoryId) {
+    Store.updateCategory(editingCategoryId, { name: name, image: pendingCategoryImage });
+    showToast("تم تحديث القسم");
+  } else {
+    Store.addCategory({ name: name, image: pendingCategoryImage, icon: "box" });
+    showToast("تمت إضافة القسم");
+  }
+
+  closeCategoryModal();
+  renderCategoriesTable();
+  populateCategorySelect();
+}
