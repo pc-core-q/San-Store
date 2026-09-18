@@ -527,7 +527,7 @@ button { font-family: inherit; cursor: pointer; }
 @media (max-width: 768px) {
   .hero-art {
     transform: scale(0.6) !important; /* تصغير الحجم بنسبة 40% */
-    margin-top: -40px !important; /* سحب العناصر لتقليل الفراغ من الأعلى */
-    margin-bottom: -40px !important; /* سحب العناصر لتقليل الفراغ من الأسفل */
+    margin-top: -50px !important; /* سحب العناصر لتقليل الفراغ من الأعلى */
+    margin-bottom: -50px !important; /* سحب العناصر لتقليل الفراغ من الأسفل */
   }
 }
