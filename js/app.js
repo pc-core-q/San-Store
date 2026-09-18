@@ -80,17 +80,17 @@ function renderFooter() {
           "</ul></div>" +
         "</div>" +
       "<div class='footer-bottom' style='padding: 15px; line-height: 2; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;'>" +
-"<span>&copy; " + new Date().getFullYear() + " " + settings.storeName + " - جميع الحقوق محفوظة. | اعداد و تطوير | <span style='color: #a5d6a7; font-weight: bold;'>م.امير</span></span>" +
-"<span>انستغرام : <a href='https://instagram.com/az_6ui' target='_blank' style='color: #a5d6a7; text-decoration: none;'>az_6ui</a></span>" +
-"<span>واتساب: <a href='https://wa.me/9647813623682' target='_blank' style='color: #a5d6a7; text-decoration: none;' dir='ltr'>07813623682</a></span>" +
-"<a href='login.html'>لوحة التحكم</a>" +
-"</div>" +
-"</div>" +
-"</footer>";
+      "<span>&copy; " + new Date().getFullYear() + " " + settings.storeName + " - جميع الحقوق محفوظة. | اعداد و تطوير | <span style='color: #a5d6a7; font-weight: bold;'>م.امير</span></span>" +
+      "<span>انستغرام : <a href='https://instagram.com/az_6ui' target='_blank' style='color: #a5d6a7; text-decoration: none;'>az_6ui</a></span>" +
+      "<span>واتساب: <a href='https://wa.me/9647813623682' target='_blank' style='color: #a5d6a7; text-decoration: none;' dir='ltr'>07813623682</a></span>" +
+      "<a href='login.html'>لوحة التحكم</a>" +
+      "</div>" +
+      "</div>" +
+      "</footer>";
+}
+
 function initMobileNav() {
   const toggle = document.getElementById("navToggle");
-"<a href=\"login.html\">لوحة التحكم</a>" +
-"</div>" +
   const nav = document.getElementById("mainNav");
   if (!toggle || !nav) return;
   toggle.addEventListener("click", function () {
@@ -127,9 +127,6 @@ function showToast(message) {
   toast._timer = setTimeout(function () { toast.classList.remove("show"); }, 2400);
 }
 
-// بعض الصفحات الفرعية (لا يوجد فرعيات فعلية هنا لكن الدالة تبقى جاهزة
-// إن أضيفت مجلدات لاحقًا) — تُبقي الروابط كما هي حاليًا لأن كل الصفحات
-// في نفس المستوى الجذري.
 function fixRelativePaths(scope) { /* no-op: flat file structure */ }
 
 document.addEventListener("DOMContentLoaded", function () {
