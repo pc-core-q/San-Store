@@ -161,6 +161,7 @@
 </div>
 
 <!-- ============ Category modal ============ -->
+<!-- ============ Category modal ============ -->
 <div class="modal-overlay" id="categoryModal">
   <div class="modal-card">
     <div class="modal-head">
@@ -168,11 +169,14 @@
       <button class="close-modal" id="closeCategoryModal">__ICON_CLOSE__</button>
     </div>
     <form id="categoryForm">
-      <div class="field"><label>اسم القسم</label><input type="text" id="categoryName" required></div>
       <div class="field">
-        <label>الأيقونة</label>
-        <div class="icon-picker" id="categoryIconPicker"></div>
+        <label>صورة القسم</label>
+        <div class="image-upload">
+          <div class="preview" id="categoryImagePreview"></div>
+          <input type="file" id="categoryImageInput" accept="image/*">
+        </div>
       </div>
+      <div class="field"><label>اسم القسم</label><input type="text" id="categoryName" required></div>
       <button type="submit" class="btn btn-primary btn-block">حفظ القسم</button>
     </form>
   </div>
