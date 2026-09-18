@@ -273,3 +273,32 @@ document.addEventListener("DOMContentLoaded", function () {
   initShopPage();
   initProductDetailPage();
 });
+/* --- ترقية عرض الأقسام لدعم الصور --- */
+function initHomeCollections() {
+  const featuredEl = document.getElementById("featuredGrid");
+  const newEl = document.getElementById("newGrid");
+  const catEl = document.getElementById("homeCategories");
+  if (!featuredEl && !newEl && !catEl) return;
+
+  const products = Store.getProducts();
+
+  if (featuredEl) {
+    renderGridInto("featuredGrid", products.filter(function (p) { return p.featured; }).slice(0, 4), "لا توجد منتجات مميزة حاليًا.");
+  }
+  if (newEl) {
+    renderGridInto("newGrid", products.filter(function (p) { return p.isNew; }).slice(0, 4), "لا توجد منتجات جديدة حاليًا.");
+  }
+  if (catEl) {
+    const categories = Store.getCategories();
+    catEl.innerHTML = categories.map(function (c) {
+      const media = c.image 
+        ? '<img src="' + c.image + '" alt="' + c.name + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">' 
+        : iconSvg(c.icon || "box");
+        
+      return '<a href="products.html?cat=' + c.id + '" class="cat-chip">' +
+        '<span class="cat-icon" style="padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">' + media + '</span>' +
+        '<span class="name">' + c.name + "</span>" +
+      "</a>";
+    }).join("");
+  }
+}
