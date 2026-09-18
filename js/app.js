@@ -80,7 +80,7 @@ function renderFooter() {
           "</ul></div>" +
         "</div>" +
         '<div class="footer-bottom">' +
-          "<span>© " + new Date().getFullYear() + " " + settings.storeName + " — جميع الحقوق محفوظة</span>" +
+        "<span>&copy; " + new Date().getFullYear() + " " + settings.storeName + " - جميع الحقوق محفوظة. | تطوير: <a href='رابط_انستغرام_هنا' target='_blank' style='color: #a3e635; text-decoration: none; font-weight: bold;'>م.أمير</a></span>" +
           '<a href="login.html">لوحة التحكم</a>' +
         "</div>" +
       "</div>" +
