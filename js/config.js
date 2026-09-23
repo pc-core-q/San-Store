@@ -27,3 +27,6 @@ const STORE_CONFIG = {
   adminUsername: "admin",
   adminPassword: "PetShop@2025"
 };
+// بيانات مشروع Supabase — يستخدمها store.js و admin.js
+const SUPABASE_URL = "https://sukfyegmgjrjbyerheco.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_RN-j2GUrwJimTl-eLTR8wg_eP3xx0ll";
