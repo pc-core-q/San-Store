@@ -57,7 +57,7 @@ function renderHeader() {
           '<span class="brand-name">' + settings.storeName + '<span>' + settings.storeTagline + "</span></span>" +
         "</a>" +
         '<nav class="main-nav" id="mainNav">' + navHtml + "</nav>" +
-        '<div class="header-actions">' +
+              '<div class="header-actions">' +
           
           // --- زر البحث السريع ---
           '<button type="button" class="btn-icon" id="openGlobalSearch" aria-label="بحث" title="بحث">' +
@@ -68,6 +68,9 @@ function renderHeader() {
           '<a href="cart.html" class="btn-icon cart-link" aria-label="السلة" title="السلة">' +
             iconSvg("cart") +
             '<span class="cart-count" id="cartCount">0</span>' +
+          "</a>" +
+          '<a href="login.html" class="btn-icon admin-link" aria-label="دخول الأدمن" title="دخول الأدمن">' +
+            iconSvg("lock") +
           "</a>" +
           '<button class="btn-icon nav-toggle" id="navToggle" aria-label="القائمة">' + iconSvg("menu") + "</button>" +
         "</div>" +
