@@ -1,15 +1,15 @@
 /* ==========================================================================
    admin.js
    منطق لوحة تحكم الأدمن بالكامل (admin.html). كل شيء هنا يقرأ ويكتب عبر
-   Store (store.js) الذي يخزّن البيانات في localStorage.
+   Store (store.js)، والصور ترفع مباشرة لـ Supabase Storage.
    ========================================================================== */
 
 let editingProductId = null;
 let editingCategoryId = null;
-let editingAdId = null; // التعديل 1: متغير للإعلانات
-let pendingProductImage = null; 
-let pendingCategoryImage = null; 
-let pendingAdImage = null; // التعديل 2: صورة الإعلان المؤقتة
+let editingAdId = null;
+let pendingProductImage = null;
+let pendingCategoryImage = null;
+let pendingAdImage = null;
 
 function initAdminPage() {
   const app = document.getElementById("adminApp");
@@ -29,15 +29,15 @@ function initAdminPage() {
   renderProductsTable();
   renderCategoriesTable();
   renderOrdersTable();
-  renderAdsTable(); // التعديل 3: تشغيل جدول الإعلانات
-  
+  renderAdsTable();
+
   fillSettingsForm();
   populateCategorySelect();
   populateIconPicker();
 
   wireProductModal();
   wireCategoryModal();
-  wireAdModal(); // التعديل 4: تشغيل نوافذ الإعلانات
+  wireAdModal();
   wireSettingsForm();
 
   const productSearch = document.getElementById("adminProductSearch");
@@ -45,42 +45,49 @@ function initAdminPage() {
 }
 
 /* ---------------------------------------------------------------------- */
-/* ضاغط الصور الذكي لتصغير الحجم قبل الحفظ                                 */
+/* رفع الصور مباشرة إلى Supabase Storage (بدل تحويلها Base64)              */
 /* ---------------------------------------------------------------------- */
 
-function compressImage(file, maxWidth = 650, quality = 0.55) {
-   return new Promise((resolve, reject) => {
+async function uploadImageToSupabase(file, folder, maxWidth = 650, quality = 0.55) {
+  const blob = await new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = event => {
+    reader.onload = function (event) {
       const img = new Image();
       img.src = event.target.result;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // حساب الأبعاد الجديدة مع الحفاظ على التناسب
+      img.onload = function () {
         let width = img.width;
         let height = img.height;
         if (width > maxWidth) {
           height = Math.round((height * maxWidth) / width);
           width = maxWidth;
         }
-
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        
-        // رسم الصورة بالحجم الجديد
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // ضغط الصورة وتحويلها لـ Base64 خفيف
-        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
-        resolve(compressedBase64);
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        canvas.toBlob(resolve, "image/jpeg", quality);
       };
-      img.onerror = error => reject(error);
+      img.onerror = reject;
     };
-    reader.onerror = error => reject(error);
+    reader.onerror = reject;
   });
+
+  const fileName = (folder || "misc") + "/" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) + ".jpg";
+
+  const uploadRes = await fetch(SUPABASE_URL + "/storage/v1/object/product-images/" + fileName, {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+      "Content-Type": "image/jpeg"
+    },
+    body: blob
+  });
+
+  if (!uploadRes.ok) throw new Error("فشل رفع الصورة");
+
+  return SUPABASE_URL + "/storage/v1/object/public/product-images/" + fileName;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -148,7 +155,7 @@ function renderProductsTable() {
     const tags = [];
     if (p.featured) tags.push("مميز");
     if (p.isNew) tags.push("جديد");
-    if (p.isOffer) tags.push("عرض🔥"); 
+    if (p.isOffer) tags.push("عرض🔥");
 
     return (
       "<tr>" +
@@ -203,14 +210,15 @@ function wireProductModal() {
     imageInput.addEventListener("change", async function () {
       const file = imageInput.files[0];
       if (!file) return;
-      
+
       try {
-        const compressedBase64 = await compressImage(file);
-        pendingProductImage = compressedBase64;
-        document.getElementById("productImagePreview").innerHTML = '<img src="' + compressedBase64 + '">';
+        showToast("جاري رفع الصورة...");
+        const imageUrl = await uploadImageToSupabase(file, "products");
+        pendingProductImage = imageUrl;
+        document.getElementById("productImagePreview").innerHTML = '<img src="' + imageUrl + '">';
       } catch (error) {
-        console.error("Image Compression Error:", error);
-        showToast("فشل ضغط الصورة. يرجى المحاولة بصورة أخرى.");
+        console.error("Image Upload Error:", error);
+        showToast("فشل رفع الصورة. يرجى المحاولة بصورة أخرى.");
       }
     });
   }
@@ -247,20 +255,19 @@ function openProductModal(productId) {
     document.getElementById("productPrice").value = p.price;
     document.getElementById("productCategorySelect").value = p.categoryId;
     document.getElementById("productStock").value = p.stock;
-    
-    // التعديل 5: جلب الخيارات/النكهات للمربع النصي
+
     if(document.getElementById("productVariants")) {
         document.getElementById("productVariants").value = p.variants && p.variants.length > 0 ? p.variants.join(", ") : "";
     }
-    
+
     document.getElementById("productAvailable").checked = p.available;
     document.getElementById("productFeatured").checked = !!p.featured;
     document.getElementById("productNew").checked = !!p.isNew;
-    
+
     if (document.getElementById("productOffer")) {
-        document.getElementById("productOffer").checked = !!p.isOffer; 
+        document.getElementById("productOffer").checked = !!p.isOffer;
     }
-    
+
     pendingProductImage = p.image || null;
     preview.innerHTML = p.image ? '<img src="' + p.image + '">' : iconSvg("box");
   } else {
@@ -282,11 +289,10 @@ function closeProductModal() {
 
 function saveProductForm(e) {
   e.preventDefault();
-  
-  // التعديل 6: تحويل النص المكتوب في مربع الخيارات إلى مصفوفة نظيفة
+
   const variantsStr = document.getElementById("productVariants") ? document.getElementById("productVariants").value : "";
   const variantsArr = variantsStr.split(',').map(v => v.trim()).filter(v => v.length > 0);
-  
+
   const data = {
     name: document.getElementById("productName").value.trim(),
     description: document.getElementById("productDescription").value.trim(),
@@ -296,8 +302,8 @@ function saveProductForm(e) {
     available: document.getElementById("productAvailable").checked,
     featured: document.getElementById("productFeatured").checked,
     isNew: document.getElementById("productNew").checked,
-    isOffer: document.getElementById("productOffer") ? document.getElementById("productOffer").checked : false, 
-    variants: variantsArr, // حفظ الخيارات في قاعدة البيانات
+    isOffer: document.getElementById("productOffer") ? document.getElementById("productOffer").checked : false,
+    variants: variantsArr,
     image: pendingProductImage
   };
 
@@ -337,11 +343,10 @@ function renderCategoriesTable() {
   tbody.innerHTML = categories.map(function (c) {
     const count = products.filter(function (p) { return p.categoryId === c.id; }).length;
     const img = c.image ? '<img src="' + c.image + '">' : '<div class="admin-table-icon">' + iconSvg(c.icon || "box") + "</div>";
-    
-    // تمييز القسم الفرعي في الجدول
+
     const parent = c.parentId ? categories.find(function(x) { return x.id === c.parentId; }) : null;
-    const displayName = parent 
-        ? c.name + '<br><small style="color:#888;">↳ فرعي من: ' + parent.name + '</small>' 
+    const displayName = parent
+        ? c.name + '<br><small style="color:#888;">↳ فرعي من: ' + parent.name + '</small>'
         : '<strong>' + c.name + '</strong>';
 
     return (
@@ -398,13 +403,14 @@ function wireCategoryModal() {
       if (!file) return;
 
       try {
-        const compressedBase64 = await compressImage(file);
-        pendingCategoryImage = compressedBase64;
+        showToast("جاري رفع الصورة...");
+        const imageUrl = await uploadImageToSupabase(file, "categories");
+        pendingCategoryImage = imageUrl;
         const preview = document.getElementById("categoryImagePreview");
-        if (preview) preview.innerHTML = '<img src="' + compressedBase64 + '">';
+        if (preview) preview.innerHTML = '<img src="' + imageUrl + '">';
       } catch (error) {
-        console.error("Image Compression Error:", error);
-        showToast("فشل ضغط الصورة. يرجى المحاولة بصورة أخرى.");
+        console.error("Image Upload Error:", error);
+        showToast("فشل رفع الصورة. يرجى المحاولة بصورة أخرى.");
       }
     });
   }
@@ -425,7 +431,7 @@ function openCategoryModal(categoryId) {
   editingCategoryId = categoryId;
   pendingCategoryImage = null;
   populateIconPicker();
-  
+
   const modal = document.getElementById("categoryModal");
   const title = document.getElementById("categoryModalTitle");
   const form = document.getElementById("categoryForm");
@@ -445,7 +451,7 @@ function openCategoryModal(categoryId) {
 
   const parentSelect = document.getElementById("categoryParent");
   const allCats = Store.getCategories();
-  
+
   parentSelect.innerHTML = '<option value="">-- قسم رئيسي مستقل --</option>' +
     allCats.filter(function(c) { return c.id !== categoryId && !c.parentId; })
            .map(function(c) { return '<option value="' + c.id + '">' + c.name + '</option>'; }).join("");
@@ -456,7 +462,7 @@ function openCategoryModal(categoryId) {
     nameInput.value = c.name;
     parentSelect.value = c.parentId || "";
     pendingCategoryImage = c.image || null;
-    
+
     if (preview) preview.innerHTML = c.image ? '<img src="' + c.image + '">' : iconSvg(c.icon || "box");
     const radio = form.querySelector('input[name="categoryIcon"][value="' + c.icon + '"]');
     if (radio) radio.checked = true;
@@ -467,7 +473,7 @@ function openCategoryModal(categoryId) {
     const first = form.querySelector('input[name="categoryIcon"]');
     if (first) first.checked = true;
   }
-  
+
   modal.classList.add("open");
 }
 
@@ -499,14 +505,13 @@ function saveCategoryForm(e) {
 }
 
 /* ---------------------------------------------------------------------- */
-/* الإعلانات (Ads Slider) - التعديل 7                                     */
+/* الإعلانات (Ads Slider)                                                 */
 /* ---------------------------------------------------------------------- */
 
 function renderAdsTable() {
   const tbody = document.getElementById("adsTableBody");
   if (!tbody) return;
-  
-  // ترتيب الإعلانات حسب الرقم المدخل
+
   const ads = Store.getAds().sort((a, b) => (a.order || 0) - (b.order || 0));
 
   if (!ads.length) {
@@ -517,7 +522,7 @@ function renderAdsTable() {
   tbody.innerHTML = ads.map(function (ad) {
     const img = ad.image ? '<img src="' + ad.image + '" style="width:80px;height:40px;border-radius:4px;object-fit:cover;">' : '<div class="admin-table-icon">' + iconSvg("image") + "</div>";
     const link = ad.link ? '<a href="' + ad.link + '" target="_blank" style="color:var(--olive-700);text-decoration:underline;">عرض الرابط</a>' : '-';
-    
+
     return (
       "<tr>" +
         "<td>" + img + "</td>" +
@@ -542,10 +547,10 @@ function deleteAdConfirm(id) {
 function wireAdModal() {
   const addBtn = document.getElementById("addAdBtn");
   if (addBtn) addBtn.addEventListener("click", function () { openAdModal(); });
-  
+
   const closeBtn = document.getElementById("closeAdModal");
   if (closeBtn) closeBtn.addEventListener("click", closeAdModal);
-  
+
   const form = document.getElementById("adForm");
   if (form) form.addEventListener("submit", saveAdForm);
 
@@ -555,14 +560,14 @@ function wireAdModal() {
       const file = imageInput.files[0];
       if (!file) return;
       try {
-        // نستخدم جودة أعلى وضغط مختلف لأن الإعلانات تكون عرضية وعادة تحتاج دقة أكبر
-        const compressedBase64 = await compressImage(file, 1000, 0.8);
-        pendingAdImage = compressedBase64;
+        showToast("جاري رفع الصورة...");
+        const imageUrl = await uploadImageToSupabase(file, "ads", 1200, 0.8);
+        pendingAdImage = imageUrl;
         const preview = document.getElementById("adImagePreview");
-        if (preview) preview.innerHTML = '<img src="' + compressedBase64 + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
+        if (preview) preview.innerHTML = '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
       } catch (error) {
-        console.error("Image Compression Error:", error);
-        showToast("فشل ضغط الصورة.");
+        console.error("Image Upload Error:", error);
+        showToast("فشل رفع الصورة.");
       }
     });
   }
@@ -585,10 +590,10 @@ function openAdModal() {
   const modal = document.getElementById("adModal");
   const form = document.getElementById("adForm");
   if(form) form.reset();
-  
+
   const preview = document.getElementById("adImagePreview");
   if (preview) preview.innerHTML = "";
-  
+
   if(modal) modal.classList.add("open");
 }
 
@@ -603,7 +608,7 @@ function saveAdForm(e) {
       showToast("يرجى رفع صورة للإعلان");
       return;
   }
-  
+
   const data = {
     link: document.getElementById("adLink") ? document.getElementById("adLink").value.trim() : "",
     order: document.getElementById("adOrder") ? Number(document.getElementById("adOrder").value) : 0,
