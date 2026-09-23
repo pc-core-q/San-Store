@@ -185,7 +185,7 @@ const Store = {
   },
   saveCategories(list) {
     localStorage.setItem(DB_KEYS.categories, JSON.stringify(list));
-    pushToFirebase();
+    pushToSupabase();
   },
   addCategory(cat) {
     const list = this.getCategories();
@@ -210,7 +210,7 @@ const Store = {
   },
   saveProducts(list) {
     localStorage.setItem(DB_KEYS.products, JSON.stringify(list));
-    pushToFirebase();
+    pushToSupabase();
   },
   getProduct(id) {
     return this.getProducts().find(p => p.id === id) || null;
@@ -240,7 +240,7 @@ const Store = {
   saveSettings(patch) {
     const current = this.getSettings();
     localStorage.setItem(DB_KEYS.settings, JSON.stringify(Object.assign(current, patch)));
-    pushToFirebase();
+    pushToSupabase();
   },
   
   // ---- ads (القسم الجديد للإعلانات) ----
@@ -249,7 +249,7 @@ const Store = {
   },
   saveAds(list) {
     localStorage.setItem(DB_KEYS.ads, JSON.stringify(list));
-    pushToFirebase();
+    pushToSupabase();
   },
   addAd(adData) {
     const list = this.getAds();
@@ -304,7 +304,7 @@ const Store = {
     const list = this.getOrders();
     list.unshift(Object.assign({ id: uid("ord"), date: new Date().toISOString() }, order));
     localStorage.setItem(DB_KEYS.orders, JSON.stringify(list));
-    pushToFirebase();
+    pushToSupabase();
   },
 
   // ---- admin session ----
