@@ -75,7 +75,7 @@ async function uploadImageToSupabase(file, folder, maxWidth = 650, quality = 0.5
 
   const fileName = (folder || "misc") + "/" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) + ".jpg";
 
-  const uploadRes = await fetch(SUPABASE_URL + "/storage/v1/object/product-images/" + fileName, {
+  const uploadRes = await fetch(SUPABASE_URL + "/storage/v1/object/image/" + fileName, {
     method: "POST",
     headers: {
       "apikey": SUPABASE_ANON_KEY,
@@ -87,7 +87,7 @@ async function uploadImageToSupabase(file, folder, maxWidth = 650, quality = 0.5
 
   if (!uploadRes.ok) throw new Error("فشل رفع الصورة");
 
-  return SUPABASE_URL + "/storage/v1/object/public/product-images/" + fileName;
+  return SUPABASE_URL + "/storage/v1/object/public/image/" + fileName;
 }
 
 /* ---------------------------------------------------------------------- */
