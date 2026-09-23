@@ -1,9 +1,3 @@
-/* ==========================================================================
-   store.js (نسخة السحابة - Firebase - مع حل مشكلة الكاش نهائياً - النسخة 2.0)
-   ========================================================================== */
-
-const FIREBASE_DB_URL = "https://pet-san-default-rtdb.firebaseio.com";
-
 const DB_KEYS = {
   categories: "ws_categories",
   products: "ws_products",
@@ -12,21 +6,19 @@ const DB_KEYS = {
   orders: "ws_orders",
   session: "ws_admin_session",
   seeded: "ws_seeded_v1",
-  ads: "ws_ads" // التعديل 1: إضافة مفتاح لجدول الإعلانات
+  ads: "ws_ads"
 };
 
 function uid(prefix) {
   return (prefix || "id") + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-// --- محرك مزامنة Firebase الجديد (نظام الطابور الذكي) ---
+// --- محرك مزامنة Supabase ---
 let pushTimeout = null;
 
-function pushToFirebase() {
-  if (pushTimeout) {
-    clearTimeout(pushTimeout);
-  }
-  
+function pushToSupabase() {
+  if (pushTimeout) clearTimeout(pushTimeout);
+
   pushTimeout = setTimeout(async () => {
     try {
       const data = {
@@ -34,69 +26,75 @@ function pushToFirebase() {
         categories: JSON.parse(localStorage.getItem(DB_KEYS.categories) || "[]"),
         settings: JSON.parse(localStorage.getItem(DB_KEYS.settings) || "{}"),
         orders: JSON.parse(localStorage.getItem(DB_KEYS.orders) || "[]"),
-        ads: JSON.parse(localStorage.getItem(DB_KEYS.ads) || "[]") // التعديل 2: رفع الإعلانات للسحابة
+        ads: JSON.parse(localStorage.getItem(DB_KEYS.ads) || "[]")
       };
-      
-      await fetch(FIREBASE_DB_URL + "/data.json", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+
+      await fetch(SUPABASE_URL + "/rest/v1/store_data?id=eq.1", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+          "Prefer": "return=minimal"
+        },
         body: JSON.stringify(data)
       });
-      
+
     } catch (e) {
-      console.error("Firebase Sync Error:", e);
+      console.error("Supabase Sync Error:", e);
     }
-  }, 600); 
+  }, 600);
 }
 
-async function pullFromFirebase() {
+async function pullFromSupabase() {
   try {
-    const cacheBuster = new Date().getTime();
-    
-    const res = await fetch(FIREBASE_DB_URL + "/data.json?nocache=" + cacheBuster, {
+    const res = await fetch(
+      SUPABASE_URL + "/rest/v1/store_data?id=eq.1&select=products,categories,settings,orders,ads&t=" + Date.now(),
+      {
         cache: "no-store",
         headers: {
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": "Bearer " + SUPABASE_ANON_KEY
         }
-    });
-    
-    const data = await res.json();
-    
-    if (data === null) {
-        pushToFirebase();
-        return;
+      }
+    );
+
+    const rows = await res.json();
+    const data = Array.isArray(rows) ? rows[0] : null;
+
+    if (!data) {
+      pushToSupabase();
+      return;
     }
 
     const localHash = JSON.stringify({
       products: JSON.parse(localStorage.getItem(DB_KEYS.products) || "[]"),
       categories: JSON.parse(localStorage.getItem(DB_KEYS.categories) || "[]"),
       settings: JSON.parse(localStorage.getItem(DB_KEYS.settings) || "{}"),
-      ads: JSON.parse(localStorage.getItem(DB_KEYS.ads) || "[]") // التعديل 3: سحب الإعلانات محلياً
+      ads: JSON.parse(localStorage.getItem(DB_KEYS.ads) || "[]")
     });
-    
+
     const remoteHash = JSON.stringify({
       products: data.products || [],
       categories: data.categories || [],
       settings: data.settings || {},
-      ads: data.ads || [] // التعديل 4: مقارنة الإعلانات من السحابة
+      ads: data.ads || []
     });
 
-      if (localHash !== remoteHash) {
-        localStorage.setItem(DB_KEYS.products, JSON.stringify(data.products || []));
-        localStorage.setItem(DB_KEYS.categories, JSON.stringify(data.categories || []));
-        localStorage.setItem(DB_KEYS.settings, JSON.stringify(data.settings || {}));
-        localStorage.setItem(DB_KEYS.ads, JSON.stringify(data.ads || []));
-        if (data.orders) localStorage.setItem(DB_KEYS.orders, JSON.stringify(data.orders));
-        // بدل إعادة تحميل الصفحة بالكامل، نبعث حدث ليحدّث كل جزء نفسه فقط
-        document.dispatchEvent(new CustomEvent("store:synced"));
+    if (localHash !== remoteHash) {
+      localStorage.setItem(DB_KEYS.products, JSON.stringify(data.products || []));
+      localStorage.setItem(DB_KEYS.categories, JSON.stringify(data.categories || []));
+      localStorage.setItem(DB_KEYS.settings, JSON.stringify(data.settings || {}));
+      localStorage.setItem(DB_KEYS.ads, JSON.stringify(data.ads || []));
+      if (data.orders) localStorage.setItem(DB_KEYS.orders, JSON.stringify(data.orders));
+      document.dispatchEvent(new CustomEvent("store:synced"));
     }
   } catch (e) {
-    console.error("Firebase Pull Error:", e);
+    console.error("Supabase Pull Error:", e);
   }
 }
 
-pullFromFirebase();
+pullFromSupabase();
 
 /* ---------------------------------------------------------------------- */
 /* Seed data (البيانات الافتراضية)                                       */
